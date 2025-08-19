@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dynamic Parameter Shift Encryption Calculator (Fixed)</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        margin: 0;
+        padding: 20px;
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .header {
+        background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+      }
+
+      .header h1 {
+        margin: 0;
+        font-size: 2.5em;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .content {
+        padding: 30px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+      }
+
+      .section {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e0e0e0;
+      }
+
+      .section h3 {
+        color: #333;
+        margin-top: 0;
+        font-size: 1.4em;
+        border-bottom: 3px solid #4facfe;
+        padding-bottom: 10px;
+      }
+
+      .input-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #555;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: border-color 0.3s;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: #4facfe;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+      }
+
+      button {
+        background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+        transition: transform 0.2s;
+        width: 100%;
+        margin-top: 10px;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+      }
+
+      .result {
+        background: #f8f9fa;
+        border-left: 4px solid #4facfe;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 8px;
+      }
+
+      .sequence-display {
+        font-family: monospace;
+        background: #2d3748;
+        color: #e2e8f0;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 15px 0;
+        overflow-x: auto;
+        font-size: 14px;
+      }
+
+      .char-mapping {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+        gap: 10px;
+        margin: 15px 0;
+      }
+
+      .char-box {
+        text-align: center;
+        padding: 8px;
+        background: #e3f2fd;
+        border-radius: 6px;
+        font-family: monospace;
+        font-size: 12px;
+      }
+
+      .full-width {
+        grid-column: 1 / -1;
+      }
+
+      .stats {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 20px;
+        margin: 20px 0;
+      }
+
+      .stats h4 {
+        margin-top: 0;
+        font-size: 1.2em;
+      }
+
+      .complexity-meter {
+        display: none;
+      }
+
+      .complexity-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb);
+        border-radius: 10px;
+        transition: width 0.3s ease;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🔐 Dynamic Parameter Shift Encryption</h1>
+        <p>Encryption System with Multi-Parameter Random Variables</p>
+      </div>
+
+      <div class="content">
+        <div class="section">
+          <h3>⚙️ Encryption Configuration</h3>
+
+          <div class="input-group">
+            <label>Original Message:</label>
+            <textarea
+              id="message"
+              rows="3"
+              placeholder="Enter the message to be encrypted... (supports uppercase/lowercase/number)"
+            >Hello</textarea
+            >
+          </div>
+
+          <div class="input-group">
+            <label>Zero Index Character:</label>
+            <input
+              type="text"
+              id="zeroIndex"
+              value="A"
+              placeholder="Example: A or A,5,z,B,7"
+            />
+            <small style="color: #666; font-size: 12px"
+              >One character for all, or comma-separated for each character (0-9, A-Z, a-z)</small
+            >
+          </div>
+
+          <div class="input-group">
+            <label>Shift Number (P):</label>
+            <input
+              type="text"
+              id="primeNumber"
+              value="7"
+              placeholder="Example: 7 or 3,5,7,11,13"
+            />
+            <small style="color: #666; font-size: 12px"
+              >One value for all characters, or comma-separated for each character (integer)</small
+            >
+          </div>
+
+          <div class="input-group">
+            <label>Operator Pattern (r):</label>
+            <input
+              type="text"
+              id="operatorPattern"
+              value="+"
+              placeholder="Example: +--++ or +"
+            />
+            <small style="color: #666; font-size: 12px"
+              >Use + and - according to message length, or one operator for all</small
+            >
+          </div>
+
+          <button onclick="encrypt()">🔐 Encrypt Message</button>
+          <button onclick="generateRandom()">
+            🎲 Randomize Parameters (According to Message Length)
+          </button>
+          <button
+            onclick="decrypt()"
+            style="background: linear-gradient(45deg, #28a745 0%, #20c997 100%)"
+          >
+            🔓 Decrypt Result
+          </button>
+        </div>
+
+        <div class="section">
+          <h3>📊 Encryption Result</h3>
+
+          <div id="encryptionResult">
+            <p>Click the encrypt button to see the result...</p>
+          </div>
+
+          <div class="stats" id="complexityStats" style="display: none">
+            <h4>📈 Complexity Analysis</h4>
+            <div id="statsContent"></div>
+
+            <div class="complexity-meter">
+              <div class="complexity-fill" id="complexityFill"></div>
+            </div>
+            <p id="complexityText"></p>
+          </div>
+        </div>
+
+      <div class="section full-width">
+        <h3>🧮 Calculation Details</h3>
+        <div id="calculationDetails"></div>
+      </div>
+    </div>
+
+    <script>
+      // ===== DPSE Fixed JavaScript =====
+
+      // Full character sequence
+      const sequence =
+        "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+      const sequenceLength = sequence.length;
+
+      // Safe modulo helper (handles negatives reliably)
+      function mod(n, m) {
+        return ((n % m) + m) % m;
+      }
+
+      // Function to get prime numbers (maintained)
+      function isPrime(num) {
+        if (num < 2) return false;
+        for (let i = 2; i <= Math.sqrt(num); i++) {
+          if (num % i === 0) return false;
+        }
+        return true;
+      }
+
+      function getRandomPrime(max = 100) {
+        const primes = [];
+        for (let i = 2; i <= max; i++) {
+          if (isPrime(i)) primes.push(i);
+        }
+        return primes[Math.floor(Math.random() * primes.length)];
+      }
+
+      // Generate random parameters but matching only the encryptable characters
+      function generateRandom() {
+        const message = document.getElementById("message").value || "";
+        // number of characters that are actually in the sequence
+        const encryptableChars = message
+          .split("")
+          .filter((c) => sequence.includes(c)).length;
+
+        if (encryptableChars === 0) {
+          alert(
+            "Enter a message containing characters 0-9, A-Z, a-z to generate random parameters!"
+          );
+          return;
+        }
+
+        // Random zero index pattern - according to the number of characters to be encrypted
+        const zeroIndices = [];
+        for (let i = 0; i < encryptableChars; i++) {
+          const randomIndex = Math.floor(Math.random() * sequence.length);
+          zeroIndices.push(sequence[randomIndex]);
+        }
+        document.getElementById("zeroIndex").value = zeroIndices.join(",");
+
+        // Random integer pattern - according to the number of characters (1-99)
+        const integers = [];
+        for (let i = 0; i < encryptableChars; i++) {
+          integers.push(Math.floor(Math.random() * 99) + 1); // 1-99
+        }
+        document.getElementById("primeNumber").value = integers.join(",");
+
+        // Random operator pattern - according to the number of characters
+        const operators = [];
+        for (let i = 0; i < encryptableChars; i++) {
+          operators.push(Math.random() > 0.5 ? "+" : "-");
+        }
+        document.getElementById("operatorPattern").value = operators.join("");
+      }
+
+      // ===== Reversible mapping helpers =====
+      function getCharIndex(char, zeroChar) {
+        const zeroIndex = sequence.indexOf(zeroChar);
+        const charIndex = sequence.indexOf(char);
+
+        if (charIndex === -1 || zeroIndex === -1) return null;
+
+        // relative position (safe modulo)
+        return mod(charIndex - zeroIndex, sequenceLength);
+      }
+
+      function getCharFromIndex(relativeIndex, zeroChar, additionalOffset = 0) {
+        const zeroIndex = sequence.indexOf(zeroChar);
+        if (zeroIndex === -1) return null;
+
+        // Apply squared influence based on zeroChar position (quadratic)
+        const zeroInfluence = mod(zeroIndex ** 2, sequenceLength);
+        const actualIndex = mod(
+          zeroIndex + relativeIndex + zeroInfluence + additionalOffset,
+          sequenceLength
+        );
+        return sequence[actualIndex];
+      }
+
+      // ===== Encryption =====
+      function encrypt() {
+        const message = document.getElementById("message").value || "";
+        const zeroIndexInput = document.getElementById("zeroIndex").value;
+        const primeInput = document.getElementById("primeNumber").value;
+        const operatorPattern =
+          document.getElementById("operatorPattern").value || "";
+
+        if (!message || !zeroIndexInput || !primeInput || !operatorPattern) {
+          alert("Please ensure all fields are filled!");
+          return;
+        }
+
+        // Count encryptable characters
+        const validCharsOnly = message
+          .split("")
+          .filter((c) => sequence.includes(c));
+        if (validCharsOnly.length === 0) {
+          alert(
+            "Message must contain at least one character from the sequence (0-9, A-Z, a-z)!"
+          );
+          return;
+        }
+
+        // Parse zero index array
+        const zeroIndexArray = zeroIndexInput.split(",").map((z) => z.trim());
+        for (let zeroChar of zeroIndexArray) {
+          if (!sequence.includes(zeroChar)) {
+            alert(
+              `Invalid Zero Index Character '${zeroChar}'! Must be from the sequence (0-9, A-Z, a-z)`
+            );
+            return;
+          }
+        }
+
+        // Parse integer numbers
+        const integerArray = primeInput
+          .split(",")
+          .map((p) => parseInt(p.trim(), 10));
+        for (let integer of integerArray) {
+          if (isNaN(integer) || integer < 1) {
+            alert(
+              `${integer} is not a valid integer! Must be a positive integer >= 1`
+            );
+            return;
+          }
+        }
+
+        // Validate operator pattern
+        if (!/^[+\-]+$/.test(operatorPattern)) {
+          alert("Operator pattern can only contain + and -!");
+          return;
+        }
+
+        let encryptedMessage = "";
+        let calculationSteps = "";
+        let validChars = 0;
+        let charIndex = 0;
+
+        calculationSteps += `<div class="sequence-display">Character Sequence: ${sequence}</div>`;
+        calculationSteps += `<div class="result"><strong>Multi-Variable Encryption Parameters:</strong><br>`;
+        calculationSteps += `• Index 0 Pattern: ${zeroIndexInput}<br>`;
+        calculationSteps += `• Shift Number (P): ${primeInput}<br>`;
+        calculationSteps += `• Operator Pattern (r): ${operatorPattern}<br></div>`;
+
+        calculationSteps += '<div class="char-mapping">';
+
+        for (let i = 0; i < message.length; i++) {
+          const char = message[i];
+
+          if (sequence.includes(char)) {
+            const zeroChar = zeroIndexArray[charIndex % zeroIndexArray.length];
+            const integer = integerArray[charIndex % integerArray.length];
+            const operator =
+              operatorPattern[charIndex % operatorPattern.length];
+
+            const originalRel = getCharIndex(char, zeroChar);
+            if (originalRel === null) {
+              // safety fallback
+              encryptedMessage += char;
+              calculationSteps += `<div class="char-box"><strong>${char}</strong><br>(skip)</div>`;
+              charIndex++;
+              continue;
+            }
+
+            // Apply shift using safe modulo
+            let newRel;
+            if (operator === "+") {
+              newRel = mod(originalRel + integer, sequenceLength);
+            } else {
+              newRel = mod(originalRel - integer, sequenceLength);
+            }
+
+            const encryptedChar = getCharFromIndex(newRel, zeroChar);
+            encryptedMessage += encryptedChar;
+
+            validChars++;
+
+            calculationSteps += `\n                    <div class="char-box">\n                        <strong>${char}</strong> (#${
+              charIndex + 1
+            })<br>\n                        ZeroChar=${zeroChar} (pos:${sequence.indexOf(
+              zeroChar
+            )})<br>\n                        RelativeIdx=${originalRel}<br>\n                        P=${integer}, r=${operator}<br>\n                        NewRelIdx=${newRel}<br>\n                        ZeroInfluence=${sequence.indexOf(
+              zeroChar
+            )}²=${mod(
+              sequence.indexOf(zeroChar) ** 2,
+              sequenceLength
+            )}<br>\n                        <strong style="color: #4facfe;">${encryptedChar}</strong>\n                    </div>`;
+
+            charIndex++;
+          } else {
+            encryptedMessage += char;
+            calculationSteps += `\n                    <div class="char-box">\n                        <strong>${char}</strong><br>\n                        (not encrypted)\n                    </div>`;
+          }
+        }
+
+        calculationSteps += "</div>";
+
+        // Display result (give id to span so decrypt can safely find it)
+        document.getElementById("encryptionResult").innerHTML = `
+                <div class="result">
+                    <strong>Original Message:</strong> ${message}<br>
+                    <strong>Encrypted Message:</strong> <span id="encryptedOutput" style="font-family: monospace; font-size: 1.2em; color: #4facfe; background: #f0f8ff; padding: 5px; border-radius: 4px;">${encryptedMessage}</span>
+                </div>
+            `;
+
+        document.getElementById("calculationDetails").innerHTML =
+          calculationSteps;
+
+        // Complexity analysis with new parameters
+        showComplexityAnalysis(
+          validChars,
+          integerArray,
+          operatorPattern,
+          zeroIndexArray
+        );
+      }
+
+      function showComplexityAnalysis(
+        messageLength,
+        primeArray,
+        operatorPattern,
+        zeroIndexArray
+      ) {
+        const possibleZeroChars = sequenceLength; // 62 characters
+        const possibleOperators = Math.pow(2, operatorPattern.length);
+        const possiblePrimes = 25; // approximation
+
+        const logZeroIndexCombinations =
+          zeroIndexArray.length * Math.log10(possibleZeroChars);
+        const logPrimeCombinations =
+          primeArray.length * Math.log10(possiblePrimes);
+        const logOperatorCombinations = operatorPattern.length * Math.log10(2);
+        const logTotalConfigurations =
+          logZeroIndexCombinations +
+          logPrimeCombinations +
+          logOperatorCombinations;
+
+        const logBruteForceAttempts =
+          messageLength * Math.log10(sequenceLength);
+
+        const operatorEntropy = operatorPattern.length * Math.log2(2);
+        const primeEntropy = primeArray.length * Math.log2(possiblePrimes);
+        const zeroIndexEntropy =
+          zeroIndexArray.length * Math.log2(possibleZeroChars);
+        const totalEntropy = operatorEntropy + primeEntropy + zeroIndexEntropy;
+
+        function formatLargeNumber(logValue) {
+          if (logValue < 3)
+            return Math.round(Math.pow(10, logValue)).toLocaleString();
+          return `10^${Math.round(logValue)}`;
+        }
+
+        function getSecurityRating(entropy, messageLength) {
+          const entropyPerChar = entropy / Math.max(1, messageLength);
+          if (entropyPerChar > 15)
+            return { rating: "MILITARY GRADE", color: "#ff0080" };
+          if (entropyPerChar > 12)
+            return { rating: "CRYPTOGRAPHICALLY SECURE", color: "#ff4081" };
+          if (entropyPerChar > 10)
+            return { rating: "ULTRA SECURE", color: "#e91e63" };
+          if (entropyPerChar > 8)
+            return { rating: "Very Secure", color: "#9c27b0" };
+          if (entropyPerChar > 6) return { rating: "Secure", color: "#673ab7" };
+          return { rating: "Moderate", color: "#3f51b5" };
+        }
+
+        const securityInfo = getSecurityRating(totalEntropy, messageLength);
+        const complexityPercentage = Math.min(
+          100,
+          (totalEntropy / Math.max(1, messageLength) / 16) * 100
+        );
+
+        let comparisonText = "";
+        if (totalEntropy > 256)
+          comparisonText = "Exceeds AES-256 bit security!";
+        else if (totalEntropy > 128)
+          comparisonText = "Equivalent to AES-128 bit security";
+        else if (totalEntropy > 64) comparisonText = "Exceeds DES (64-bit)";
+        else comparisonText = "Basic encryption level";
+
+        document.getElementById("statsContent").innerHTML = `
+                <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                    <strong style="font-size: 1.1em;">🛡️ DPSE SECURITY ANALYSIS</strong><br>
+                    <div style="margin: 10px 0; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                        • Message length: <strong>${messageLength} characters</strong><br>
+                        • Parameters per character: <strong>3 unique variables</strong><br>
+                        • Total entropy: <strong style="color: #ffd700;">${totalEntropy.toFixed(
+                          1
+                        )} bit</strong><br>
+                        • Entropy per character: <strong>${(
+                          totalEntropy / Math.max(1, messageLength)
+                        ).toFixed(1)} bit/char</strong><br>
+                    </div>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                    <strong>🔢 CONFIGURATION COMPLEXITY</strong><br>
+                    • Zero Index Combinations: ${formatLargeNumber(
+                      logZeroIndexCombinations
+                    )}<br>
+                    • Prime Combinations: ${formatLargeNumber(
+                      logPrimeCombinations
+                    )}<br>
+                    • Operator Combinations: ${formatLargeNumber(
+                      logOperatorCombinations
+                    )}<br>
+                    • <strong style="color: #ff6b6b;">Total Configurations: ${formatLargeNumber(
+                      logTotalConfigurations
+                    )}</strong><br>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px;">
+                    <strong>🎯 SECURITY COMPARISON</strong><br>
+                    • Brute force complexity: ${formatLargeNumber(
+                      logBruteForceAttempts
+                    )} attempt...
+                    • Standard comparison: <strong style="color: #48dbfb;">${comparisonText}</strong><br>
+                    • Pattern recognition: <strong style="color: #ff4081;">IMPOSSIBLE</strong><br>
+                    • Frequency analysis: <strong style="color: #ff4081;">INEFFECTIVE</strong><br>
+                </div>
+            `;
+
+        document.getElementById("complexityText").innerHTML = `
+                <strong style="color: ${securityInfo.color};">${securityInfo.rating}</strong><br>
+                <small style="opacity: 0.9;">Triple-variable per-character encryption dengan unique parameters</small>
+            `;
+
+        document.getElementById("complexityStats").style.display = "block";
+      }
+
+      // ===== Decryption (safe modulo everywhere) =====
+      function getCharFromEncrypted(encryptedChar, zeroChar, shift, operator) {
+        const zeroIndex = sequence.indexOf(zeroChar);
+        const encryptedIndex = sequence.indexOf(encryptedChar);
+        if (zeroIndex === -1 || encryptedIndex === -1) return null;
+
+        const zeroInfluence = mod(zeroIndex ** 2, sequenceLength); // KUADRAT
+
+        // Step 1: Remove zero influence and get relative encrypted index (safe mod)
+        let relativeEncryptedIndex = mod(
+          encryptedIndex - zeroIndex - zeroInfluence,
+          sequenceLength
+        );
+
+        // Step 2: Reverse the shift operation (safe mod)
+        let originalRelativeIndex;
+        if (operator === "+") {
+          originalRelativeIndex = mod(
+            relativeEncryptedIndex - shift,
+            sequenceLength
+          );
+        } else {
+          originalRelativeIndex = mod(
+            relativeEncryptedIndex + shift,
+            sequenceLength
+          );
+        }
+
+        // Step 3: Convert back to actual character position
+        let originalIndex = mod(
+          zeroIndex + originalRelativeIndex,
+          sequenceLength
+        );
+
+        return sequence[originalIndex];
+      }
+
+      function decrypt() {
+        const encSpan = document.getElementById("encryptedOutput");
+        if (!encSpan) {
+          alert("Enkripsi pesan terlebih dahulu!");
+          return;
+        }
+        const encryptedMessage = encSpan.textContent || "";
+
+        const zeroIndexInput = document.getElementById("zeroIndex").value;
+        const primeInput = document.getElementById("primeNumber").value;
+        const operatorPattern =
+          document.getElementById("operatorPattern").value || "";
+
+        const zeroIndexArray = zeroIndexInput.split(",").map((z) => z.trim());
+        const integerArray = primeInput
+          .split(",")
+          .map((p) => parseInt(p.trim(), 10));
+
+        let decryptedMessage = "";
+        let charIndex = 0;
+
+        for (let i = 0; i < encryptedMessage.length; i++) {
+          const encChar = encryptedMessage[i];
+
+          if (sequence.includes(encChar)) {
+            const zeroChar = zeroIndexArray[charIndex % zeroIndexArray.length];
+            const integer = integerArray[charIndex % integerArray.length];
+            const operator =
+              operatorPattern[charIndex % operatorPattern.length];
+
+            const originalChar = getCharFromEncrypted(
+              encChar,
+              zeroChar,
+              integer,
+              operator
+            );
+            decryptedMessage += originalChar !== null ? originalChar : encChar;
+            charIndex++;
+          } else {
+            decryptedMessage += encChar;
+          }
+        }
+
+        // Show decryption result
+        document.getElementById("encryptionResult").innerHTML += `
+                <div class="result" style="border-left-color: #28a745; margin-top: 15px;">
+                    <strong>🔓 Hasil Dekripsi:</strong> <span style="font-family: monospace; font-size: 1.2em; color: #28a745; background: #f0fff0; padding: 5px; border-radius: 4px;">${decryptedMessage}</span><br>
+                    <strong>✅ Verifikasi:</strong> ${
+                      decryptedMessage ===
+                      document.getElementById("message").value
+                        ? "BERHASIL! Pesan sama persis."
+                        : "GAGAL! Ada kesalahan."
+                    }
+                </div>
+            `;
+      }
+
+      // Inisialisasi sederhana
+      window.onload = function () {
+        document.getElementById("message").value = "Hello";
+      };
+    </script>
+  </body>
+</html>

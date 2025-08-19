@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DPSE Decryption Calculator</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(
+          135deg,
+          #ff6b6b 0%,
+          #feca57 50%,
+          #48dbfb 100%
+        );
+        margin: 0;
+        padding: 20px;
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+      }
+
+      .header {
+        background: linear-gradient(45deg, #ff6b6b 0%, #feca57 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+      }
+
+      .header h1 {
+        margin: 0;
+        font-size: 2.5em;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .content {
+        padding: 30px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+      }
+
+      .section {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e0e0e0;
+      }
+
+      .section h3 {
+        color: #333;
+        margin-top: 0;
+        font-size: 1.4em;
+        border-bottom: 3px solid #ff6b6b;
+        padding-bottom: 10px;
+      }
+
+      .input-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #555;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: border-color 0.3s;
+      }
+
+      input:focus,
+      textarea:focus {
+        border-color: #ff6b6b;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+      }
+
+      button {
+        background: linear-gradient(45deg, #ff6b6b 0%, #feca57 100%);
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+        transition: transform 0.2s;
+        width: 100%;
+        margin-top: 10px;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+      }
+
+      button.success {
+        background: linear-gradient(45deg, #28a745 0%, #20c997 100%);
+      }
+
+      button.success:hover {
+        box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+      }
+
+      .result {
+        background: #f8f9fa;
+        border-left: 4px solid #ff6b6b;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 8px;
+      }
+
+      .success-result {
+        border-left-color: #28a745;
+        background: #f0fff0;
+      }
+
+      .sequence-display {
+        font-family: monospace;
+        background: #2d3748;
+        color: #e2e8f0;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 15px 0;
+        overflow-x: auto;
+        font-size: 14px;
+      }
+
+      .char-mapping {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+        gap: 10px;
+        margin: 15px 0;
+      }
+
+      .char-box {
+        text-align: center;
+        padding: 10px;
+        background: #ffe6e6;
+        border-radius: 8px;
+        font-family: monospace;
+        font-size: 12px;
+        border: 2px solid #ff6b6b;
+      }
+
+      .char-box.decrypted {
+        background: #e8f5e8;
+        border-color: #28a745;
+      }
+
+      .full-width {
+        grid-column: 1 / -1;
+      }
+
+      .verification {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 20px;
+        margin: 20px 0;
+      }
+
+      .verification.failed {
+        background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+      }
+
+      .key-info {
+        background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 20px;
+        margin: 20px 0;
+      }
+
+      .key-info h4 {
+        margin-top: 0;
+        font-size: 1.2em;
+      }
+
+      .warning {
+        background: rgba(255, 193, 7, 0.1);
+        border-left: 4px solid #ffc107;
+        padding: 15px;
+        margin: 15px 0;
+        border-radius: 8px;
+      }
+
+      .step-counter {
+        display: inline-block;
+        background: #ff6b6b;
+        color: white;
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        line-height: 25px;
+        text-align: center;
+        font-weight: bold;
+        margin-right: 10px;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🔓 DPSE Decryption Calculator</h1>
+        <p>Dynamic Parameter Shift Encryption - Special Decryption</p>
+      </div>
+
+      <div class="content">
+        <div class="section">
+          <h3>🔐 Decryption Input</h3>
+
+          <div class="input-group">
+            <label>Encrypted Message:</label>
+            <textarea
+              id="encryptedMessage"
+              rows="3"
+              placeholder="Enter the encrypted message..."
+            ></textarea>
+          </div>
+
+          <div class="input-group">
+            <label>Zero Index Characters (Zero Chars):</label>
+            <input type="text" id="zeroIndex" placeholder="Example: A,5,z,B,7" />
+            <small style="color: #666; font-size: 12px"
+              >Sequence of zero index characters used during encryption</small
+            >
+          </div>
+
+          <div class="input-group">
+            <label>Shift Number (P):</label>
+            <input
+              type="text"
+              id="primeNumber"
+              placeholder="Example: 3,15,7,21,13"
+            />
+            <small style="color: #666; font-size: 12px"
+              >Sequence of shift numbers used during encryption</small
+            >
+          </div>
+
+          <div class="input-group">
+            <label>Operator Pattern (r):</label>
+            <input
+              type="text"
+              id="operatorPattern"
+              placeholder="Example: +--++"
+            />
+            <small style="color: #666; font-size: 12px"
+              >Pattern of + and - operators used during encryption</small
+            >
+          </div>
+
+          <button onclick="decrypt()" class="success">🔓 Decrypt Message</button>
+          <button onclick="loadExample()">📝 Load Example Data</button>
+          <button onclick="clearAll()">🧹 Clear All</button>
+        </div>
+
+        <div class="section">
+          <h3>📋 Decryption Result</h3>
+
+          <div id="decryptionResult">
+            <p style="text-align: center; color: #666; font-style: italic">
+              Enter encryption data and press the decrypt button...
+            </p>
+          </div>
+
+          <div class="key-info" id="keyInfo" style="display: none">
+            <h4>🔑 Decryption Key Information</h4>
+            <div id="keyDetails"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Deret karakter yang sama dengan enkripsi
+      const sequence =
+        "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+      const sequenceLength = sequence.length;
+
+      // Helper function for safe modulo
+      function mod(n, m) {
+        return ((n % m) + m) % m;
+      }
+
+      function loadExample() {
+        // Known encryption example data
+        document.getElementById("encryptedMessage").value = "lDdRI";
+        document.getElementById("zeroIndex").value = "G,Z,W,B,v";
+        document.getElementById("primeNumber").value = "40,74,22,79,57";
+        document.getElementById("operatorPattern").value = "--+--";
+
+        // Otomatis dekripsi contoh
+        setTimeout(decrypt, 100);
+      }
+
+      function clearAll() {
+        document.getElementById("encryptedMessage").value = "";
+        document.getElementById("zeroIndex").value = "";
+        document.getElementById("primeNumber").value = "";
+        document.getElementById("operatorPattern").value = "";
+        document.getElementById("decryptionResult").innerHTML =
+          '<p style="text-align: center; color: #666; font-style: italic;">Enter encryption data and press the decrypt button...</p>';
+        document.getElementById("decryptionSteps").innerHTML = "";
+        document.getElementById("keyInfo").style.display = "none";
+      }
+
+      // Main decryption function with step-by-step explanation
+      function getCharFromEncrypted(encryptedChar, zeroChar, shift, operator) {
+        const zeroIndex = sequence.indexOf(zeroChar);
+        const encryptedIndex = sequence.indexOf(encryptedChar);
+        const zeroInfluence = mod(
+          sequence.indexOf(zeroChar) ** 2,
+          sequenceLength
+        );
+
+        // Step 1: Remove zero influence and get relative encrypted index
+        let relativeEncryptedIndex = mod(
+          encryptedIndex - zeroIndex - zeroInfluence,
+          sequenceLength
+        );
+
+        // Step 2: Reverse the shift operation
+        let originalRelativeIndex;
+        if (operator === "+") {
+          // Jika enkripsi tambah, dekripsi kurangi
+          originalRelativeIndex = mod(
+            relativeEncryptedIndex - shift,
+            sequenceLength
+          );
+        } else {
+          // Jika enkripsi kurang, dekripsi tambah
+          originalRelativeIndex = mod(
+            relativeEncryptedIndex + shift,
+            sequenceLength
+          );
+        }
+
+        // Step 3: Convert back to actual character position
+        let originalIndex = mod(
+          zeroIndex + originalRelativeIndex,
+          sequenceLength
+        );
+
+        return {
+          char: sequence[originalIndex],
+          steps: {
+            encryptedIndex,
+            zeroIndex,
+            zeroInfluence,
+            relativeEncryptedIndex,
+            originalRelativeIndex,
+            originalIndex,
+          },
+        };
+      }
+
+      function decrypt() {
+        const encryptedMessage =
+          document.getElementById("encryptedMessage").value;
+        const zeroIndexInput = document.getElementById("zeroIndex").value;
+        const primeInput = document.getElementById("primeNumber").value;
+        const operatorPattern =
+          document.getElementById("operatorPattern").value;
+
+        // Validasi input
+        if (
+          !encryptedMessage ||
+          !zeroIndexInput ||
+          !primeInput ||
+          !operatorPattern
+        ) {
+          alert("Please ensure all fields are filled!");
+          return;
+        }
+
+        // Parse parameter arrays
+        const zeroIndexArray = zeroIndexInput.split(",").map((z) => z.trim());
+        const integerArray = primeInput
+          .split(",")
+          .map((p) => parseInt(p.trim()));
+
+        // Validasi parameter
+        for (let zeroChar of zeroIndexArray) {
+          if (!sequence.includes(zeroChar)) {
+            alert(`Invalid Zero Index Character '${zeroChar}'!`);
+            return;
+          }
+        }
+
+        for (let integer of integerArray) {
+          if (isNaN(integer) || integer < 1) {
+            alert(`${integer} is not a valid integer!`);
+            return;
+          }
+        }
+
+        if (!/^[+\-]+$/.test(operatorPattern)) {
+          alert("Operator pattern can only contain + and -!");
+          return;
+        }
+
+        // Decryption process
+        let decryptedMessage = "";
+        let decryptionSteps = "";
+        let charIndex = 0;
+        let validChars = 0;
+
+        // Information header
+        decryptionSteps += `<div class="sequence-display">Character Sequence: ${sequence}</div>`;
+        decryptionSteps += `<div class="result"><strong>Decryption Parameters:</strong><br>`;
+        decryptionSteps += `• Zero Chars: ${zeroIndexInput}<br>`;
+        decryptionSteps += `• Shift Values: ${primeInput}<br>`;
+        decryptionSteps += `• Operators: ${operatorPattern}<br></div>`;
+
+        decryptionSteps += '<div class="char-mapping">';
+
+        // Process each character
+        for (let i = 0; i < encryptedMessage.length; i++) {
+          const encChar = encryptedMessage[i];
+
+          if (sequence.includes(encChar)) {
+            const zeroChar = zeroIndexArray[charIndex % zeroIndexArray.length];
+            const integer = integerArray[charIndex % integerArray.length];
+            const operator =
+              operatorPattern[charIndex % operatorPattern.length];
+
+            const result = getCharFromEncrypted(
+              encChar,
+              zeroChar,
+              integer,
+              operator
+            );
+            const originalChar = result.char;
+            const steps = result.steps;
+
+            decryptedMessage += originalChar;
+            validChars++;
+
+            decryptionSteps += `
+          <div class="char-box decrypted">
+            <div class="step-counter">${validChars}</div>
+            <strong style="color: #ff6b6b;">${encChar}</strong> → <strong style="color: #28a745;">${originalChar}</strong><br>
+            ZeroChar: ${zeroChar} (pos:${steps.zeroIndex})<br>
+            EncIdx: ${steps.encryptedIndex}<br>
+            ZeroInf: ${steps.zeroInfluence}<br>
+            RelEnc: ${steps.relativeEncryptedIndex}<br>
+            Shift: ${integer}, Op: ${operator}<br>
+            RelOrig: ${steps.originalRelativeIndex}<br>
+            OrigIdx: ${steps.originalIndex}
+          </div>`;
+
+            charIndex++;
+          } else {
+            // Character not in sequence (space, punctuation, etc.)
+            decryptedMessage += encChar;
+            decryptionSteps += `
+          <div class="char-box">
+            <strong>${encChar}</strong><br>
+            (not decrypted)
+          </div>`;
+          }
+        }
+
+        decryptionSteps += "</div>";
+
+        // Display result
+        document.getElementById("decryptionResult").innerHTML = `
+      <div class="result success-result">
+        <strong>🔐 Encrypted Message:</strong><br>
+        <span style="font-family: monospace; font-size: 1.2em; color: #ff6b6b; background: #fff0f0; padding: 8px; border-radius: 4px; display: block; margin: 8px 0;">${encryptedMessage}</span>
+      </div>
+      <div class="result success-result">
+        <strong>🔓 Original Message (Decrypted Result):</strong><br>
+        <span style="font-family: monospace; font-size: 1.3em; color: #28a745; background: #f0fff0; padding: 8px; border-radius: 4px; display: block; margin: 8px 0; font-weight: bold;">${decryptedMessage}</span>
+      </div>
+    `;
+
+        // Key information
+        document.getElementById("keyDetails").innerHTML = `
+      <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; margin: 10px 0;">
+        <strong>🔑 Key Analysis:</strong><br>
+        • Total characters decrypted: <strong>${validChars}</strong><br>
+        • Zero chars parameter: <strong>${zeroIndexArray.length}</strong> values<br>
+        • Shift values parameter: <strong>${integerArray.length}</strong> values<br>
+        • Operator pattern length: <strong>${operatorPattern.length}</strong> characters<br>
+        • Cycling pattern: Parameters will repeat according to message length
+      </div>
+    `;
+
+        document.getElementById("keyInfo").style.display = "block";
+        document.getElementById("decryptionSteps").innerHTML = decryptionSteps;
+      }
+
+      // Initialize with example on page load
+      window.onload = function () {
+        document.getElementById("encryptedMessage").value = "";
+        document.getElementById("zeroIndex").value = "";
+        document.getElementById("primeNumber").value = "";
+        document.getElementById("operatorPattern").value = "";
+      };
+    </script>
+  </body>
+</html>
